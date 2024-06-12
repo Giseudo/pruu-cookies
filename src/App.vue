@@ -25,7 +25,6 @@ import { ref, onMounted, onBeforeUnmount } from 'vue'
 import { Clock } from 'three'
 import { useGameStore, useMenuStore, usePigeonStore } from './stores'
 
-import UIMenu from './components/UIMenu.vue'
 import HelloWorld from './scenes/HelloWorld.vue'
 
 const renderer = ref(null)

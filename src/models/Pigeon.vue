@@ -36,5 +36,5 @@ useUpdate((delta, time) => {
   root.value.position.y = (t * t * t) * height
 })
 
-defineExpose({ ...getCurrentInstance(), peck })
+defineExpose({ ...getCurrentInstance(), peck, root })
 </script>

@@ -21,5 +21,5 @@ import { ref, defineExpose, getCurrentInstance } from 'vue'
 const torus = ref(null)
 const root = ref(null)
 
-defineExpose({ ...getCurrentInstance() })
+defineExpose({ ...getCurrentInstance(), root })
 </script>

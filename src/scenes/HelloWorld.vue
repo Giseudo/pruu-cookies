@@ -34,21 +34,21 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onBeforeUnmount } from 'vue'
-import { useGameStore, useMenuStore, usePigeonStore } from '../stores'
-import { Raycaster, Vector2 } from 'three'
-
-const pigeonStore = usePigeonStore()
-const { pigeons, cookies, setSpawnPoint } = pigeonStore
-
-const menuStore = useMenuStore()
-const { showMenu } = menuStore
-
-const gameStore = useGameStore()
+import { ref } from 'vue'
+import { useMenuStore, usePigeonStore } from '../stores'
+import { useFeedPigeons, useCursorHighlight } from '../composables'
 
 const ground = ref(null)
 const highlight = ref(null)
-const raycaster = new Raycaster()
+
+const menuStore = useMenuStore()
+const pigeonStore = usePigeonStore()
+
+const { pigeons, cookies, setSpawnPoint } = pigeonStore
+const { showMenu } = menuStore
+
+useFeedPigeons(pigeons, cookies)
+useCursorHighlight(highlight, ground)
 
 const onGroundClick = event => {
   if (menuStore.isMenuOpened)
@@ -64,38 +64,4 @@ const onGroundClick = event => {
   showMenu(true)
   setSpawnPoint(point)
 }
-
-const onPointerMove = event => {
-  if (menuStore.isMenuOpened)
-    return
-
-  const camera = gameStore.camera
-  const pointer = new Vector2()
-
-  pointer.x = (event.clientX / window.innerWidth) * 2 - 1
-	pointer.y = -(event.clientY / window.innerHeight) * 2 + 1
-
-  raycaster.setFromCamera(pointer, camera)
-
-  const intersects = raycaster.intersectObjects([ ground.value.mesh ])
-
-  for (let i = 0; i < intersects.length; i ++) {
-    const intersect = intersects[i]
-    const { normal } = intersect.face
-    const { x, y, z } = intersect.point
-
-    if (intersect.object.up.dot(normal) <= 0)
-      return
-
-    highlight.value.mesh.position.set(x, y, z)
-	}
-}
-
-onMounted(() => {
-  window.addEventListener('pointermove', onPointerMove)
-})
-
-onBeforeUnmount(() => {
-  window.removeEventListener('pointermove', onPointerMove)
-})
 </script>
