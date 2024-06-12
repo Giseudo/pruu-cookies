@@ -2,7 +2,12 @@
   <AmbientLight color="white" :intensity="0.5" />
   <PointLight :position="{ x: 0, y: 50, z: 0 }" :intensity="0.5" cast-shadow />
 
+  <Sphere ref="highlight" :radius="0.25">
+    <BasicMaterial color="red" />
+  </Sphere>
+
   <Box
+    ref="ground"
     :position="{ y: -10 }"
     :width="60"
     :height="20"
@@ -25,17 +30,30 @@
     :ref="instance => pigeon.instance = instance"
     :key="uid"
     :position="pigeon.startPosition"
-    @click="removePigeon(uid)"
   />
 </template>
 
 <script setup>
-import { Pigeon, Cookie } from '../components'
-import { usePigeonStore } from '../stores'
+import { ref, onMounted, onBeforeUnmount } from 'vue'
+import { useGameStore, useMenuStore, usePigeonStore } from '../stores'
+import { Raycaster, Vector2 } from 'three'
 
-const { pigeons, cookies, addPigeon, removePigeon, addCookie } = usePigeonStore()
+const pigeonStore = usePigeonStore()
+const { pigeons, cookies, setSpawnPoint } = pigeonStore
+
+const menuStore = useMenuStore()
+const { showMenu } = menuStore
+
+const gameStore = useGameStore()
+
+const ground = ref(null)
+const highlight = ref(null)
+const raycaster = new Raycaster()
 
 const onGroundClick = event => {
+  if (menuStore.isMenuOpened)
+    return showMenu(false)
+
   const { intersect } = event
   const { object, face, point } = intersect
   const { normal } = face
@@ -43,7 +61,41 @@ const onGroundClick = event => {
   if (object.up.dot(normal) <= 0)
     return
 
-  addPigeon(point)
-  addCookie(point)
+  showMenu(true)
+  setSpawnPoint(point)
 }
+
+const onPointerMove = event => {
+  if (menuStore.isMenuOpened)
+    return
+
+  const camera = gameStore.camera
+  const pointer = new Vector2()
+
+  pointer.x = (event.clientX / window.innerWidth) * 2 - 1
+	pointer.y = -(event.clientY / window.innerHeight) * 2 + 1
+
+  raycaster.setFromCamera(pointer, camera)
+
+  const intersects = raycaster.intersectObjects([ ground.value.mesh ])
+
+  for (let i = 0; i < intersects.length; i ++) {
+    const intersect = intersects[i]
+    const { normal } = intersect.face
+    const { x, y, z } = intersect.point
+
+    if (intersect.object.up.dot(normal) <= 0)
+      return
+
+    highlight.value.mesh.position.set(x, y, z)
+	}
+}
+
+onMounted(() => {
+  window.addEventListener('pointermove', onPointerMove)
+})
+
+onBeforeUnmount(() => {
+  window.removeEventListener('pointermove', onPointerMove)
+})
 </script>

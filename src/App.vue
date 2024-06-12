@@ -11,24 +11,57 @@
       <HelloWorld />
     </Scene>
   </Renderer>
+
+  <UIMenu
+    :is-opened="menuStore.isMenuOpened"
+    :position="menuStore.mousePosition"
+    @pigeon="onAddPigeon"
+    @cookie="onAddCookie"
+  />
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, onBeforeUnmount } from 'vue'
 import { Clock } from 'three'
-import { useGameStore } from './stores/game'
+import { useGameStore, useMenuStore, usePigeonStore } from './stores'
+
+import UIMenu from './components/UIMenu.vue'
 import HelloWorld from './scenes/HelloWorld.vue'
 
-const isLoading = ref(true)
 const renderer = ref(null)
 const camera = ref(null)
-const clock = new Clock()
 
-const { setRenderer, setDelta, setTime, setCamera } = useGameStore()
+const gameStore = useGameStore()
+const pigeonStore = usePigeonStore()
+const menuStore = useMenuStore()
+
+const { addPigeon, addCookie } = pigeonStore
+const { setRenderer, setDelta, setTime, setCamera } = gameStore
+const { showMenu, setMousePosition } = menuStore
 
 const orbitControls = { enableDamping: true, dampingFactor: 0.05 }
 
+const onAddPigeon = () => {
+  addPigeon(pigeonStore.spawnPoint)
+
+  showMenu(false)
+}
+
+const onAddCookie = () => {
+  addCookie(pigeonStore.spawnPoint)
+
+  showMenu(false)
+}
+
+const onMouseMove = event => {
+  const { clientX: x, clientY: y } = event
+
+  setMousePosition({ x, y })
+}
+
 onMounted(() => {
+  const clock = new Clock()
+
   setRenderer(renderer.value)
   setCamera(camera.value.camera)
 
@@ -37,14 +70,29 @@ onMounted(() => {
     setTime(clock.getElapsedTime())
   })
 
-  isLoading.value = false
+  window.addEventListener('mousemove', onMouseMove)
+})
+
+onBeforeUnmount(() => {
+  window.removeEventListener('mousemove', onMouseMove)
 })
 </script>
 
-<style>
-canvas {
+<style lang="scss">
+#app {
   position: absolute;
   top: 0;
   left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: red;
+  z-index: 100;
+
+  canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
 }
 </style>
