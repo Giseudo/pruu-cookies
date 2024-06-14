@@ -1,3 +1,6 @@
+export * from './useBite'
 export * from './useCursorHighlight'
 export * from './useFeedPigeons'
+export * from './useKnockback'
+export * from './useMovement'
 export * from './useUpdate'

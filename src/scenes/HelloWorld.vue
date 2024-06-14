@@ -23,14 +23,25 @@
     v-for="(cookie, uid) in cookies"
     :ref="instance => cookie.instance = instance"
     :key="uid"
+    :bites="3"
     :position="cookie.startPosition"
     @eaten="onEatCookie(cookie)"
+  />
+
+  <Computer
+    v-for="(ticket, uid) in tickets"
+    :ref="instance => ticket.instance = instance"
+    :key="uid"
+    :bites="5"
+    :position="ticket.startPosition"
+    @eaten="onFinishTicket(ticket)"
   />
 
   <Pigeon
     v-for="(pigeon, uid) in pigeons"
     :ref="instance => pigeon.instance = instance"
     :key="uid"
+    :speed="3"
     :position="pigeon.startPosition"
   />
 </template>
@@ -46,10 +57,10 @@ const highlight = ref(null)
 const menuStore = useMenuStore()
 const pigeonStore = usePigeonStore()
 
-const { pigeons, cookies, setSpawnPoint, removeCookie } = pigeonStore
+const { pigeons, tickets, cookies, setSpawnPoint, removeCookie, removeTicket } = pigeonStore
 const { showMenu } = menuStore
 
-useFeedPigeons(pigeons, cookies)
+useFeedPigeons(pigeons, [ cookies, tickets ])
 useCursorHighlight(highlight, ground)
 
 const onGroundClick = event => {
@@ -69,5 +80,9 @@ const onGroundClick = event => {
 
 const onEatCookie = (cookie) => {
   removeCookie(cookie.uid)
+}
+
+const onFinishTicket = (ticket) => {
+  removeTicket(ticket.uid)
 }
 </script>

@@ -9,6 +9,7 @@ export const usePigeonStore = defineStore('pigeon', {
   state: () => ({
     pigeons: shallowReactive({}),
     cookies: shallowReactive({}),
+    tickets: shallowReactive({}),
     spawnPoint: null,
   }),
 
@@ -31,6 +32,16 @@ export const usePigeonStore = defineStore('pigeon', {
 
     removeCookie (uid) {
       delete this.cookies[uid]
+    },
+
+    addTicket (startPosition) {
+      const uid = generate_uid()
+
+      this.tickets[uid] = { uid, startPosition }
+    },
+
+    removeTicket (uid) {
+      delete this.tickets[uid]
     },
 
     setSpawnPoint (value) {

@@ -1,12 +1,16 @@
 <template>
   <Transition name="menu">
     <div v-show="isOpened" class="ui-menu" :style="{ top, left }">
-      <UIButton @click="emit('pigeon')">
+      <UIButton theme="secondary" @click="onClick('pigeon')">
         PRUUU
       </UIButton>
 
-      <UIButton @click="emit('cookie')">
+      <UIButton theme="primary" @click="onClick('cookie')">
         Cookie
+      </UIButton>
+
+      <UIButton theme="accent" @click="emit('ticket')">
+        Ticket
       </UIButton>
     </div>
   </Transition>
@@ -36,7 +40,11 @@ watch(() => props.isOpened, (value) => {
   left.value = `${props.position.x}px`
 })
 
-const emit = defineEmits([ 'pigeon', 'cookie' ])
+const emit = defineEmits([ 'pigeon', 'cookie', 'ticket' ])
+
+const onClick = (action) => {
+  emit(action)
+}
 </script>
 
 <style lang="scss">

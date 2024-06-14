@@ -5,7 +5,7 @@
     shadow
     :orbit-ctrl="orbitControls"
   >
-    <Camera ref="camera" :position="{ x: 0, y: 50, z: 0 }" :fov="60" />
+    <Camera ref="camera" :position="{ x: 20, y: 50, z: 20 }" :fov="60" />
 
     <Scene background="#00b5ff">
       <HelloWorld />
@@ -17,6 +17,7 @@
     :position="menuStore.mousePosition"
     @pigeon="onAddPigeon"
     @cookie="onAddCookie"
+    @ticket="onAddTicket"
   />
 </template>
 
@@ -35,7 +36,7 @@ const gameStore = useGameStore()
 const pigeonStore = usePigeonStore()
 const menuStore = useMenuStore()
 
-const { addPigeon, addCookie } = pigeonStore
+const { addPigeon, addCookie, addTicket } = pigeonStore
 const { setRenderer, setDelta, setTime, setCamera } = gameStore
 const { showMenu, setMousePosition } = menuStore
 
@@ -49,6 +50,12 @@ const onAddPigeon = () => {
 
 const onAddCookie = () => {
   addCookie(pigeonStore.spawnPoint)
+
+  showMenu(false)
+}
+
+const onAddTicket = () => {
+  addTicket(pigeonStore.spawnPoint)
 
   showMenu(false)
 }

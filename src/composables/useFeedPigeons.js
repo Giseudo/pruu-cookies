@@ -1,46 +1,61 @@
 import { useUpdate } from './useUpdate'
+import { Vector3 } from 'three'
 
-const findClosestFood = (pigeon, foods) => {
+const findClosestFood = (pigeon, foods = []) => {
   let minDistance = Number.MAX_VALUE
   let closest = null
 
-  Object.values(foods)
-    .map(({ instance }) => instance)
-    .forEach(food => {
-      const pigeonPosition = pigeon.root.position
-      const foodPosition = food.root.position
-      const distance = pigeonPosition.distanceToSquared(foodPosition)
+  foods.forEach(food => 
+    Object.values(food)
+      .map(({ instance }) => instance)
+      .forEach(food => {
+        const pigeonPosition = pigeon.root.position
+        const foodPosition = food.root.position
+        const distance = pigeonPosition.distanceToSquared(foodPosition)
 
-      if (distance < minDistance) {
-        minDistance = distance
-        closest = food
-      }
-    })
+        if (distance < minDistance) {
+          minDistance = distance
+          closest = food
+        }
+      })
+  )
 
   return closest
 }
 
-export const useFeedPigeons = (pigeons, foods) => {
-  useUpdate((delta) => {
+export const useFeedPigeons = (pigeons, foods = []) => {
+  useUpdate(() => {
     Object.values(pigeons)
       .map(({ instance }) => instance)
       .forEach(pigeon => {
         const closestFood = findClosestFood(pigeon, foods)
 
-        if (!closestFood)
-          return
+        let targetPosition = closestFood?.root.position
 
-        const distance = closestFood.root.position.distanceTo(pigeon.root.position)
+        if (!closestFood) {
+          const forward = pigeon.root.o3d?.getWorldDirection(new Vector3(0, 0, 1)) || new Vector3()
 
-        if (distance < 2)
+          forward.multiplyScalar(5)
+
+          targetPosition = pigeon.root.position.clone()
+            .add(forward)
+            .clamp(new Vector3(-25, 0, -25), new Vector3(25, 0, 25))
+        }
+
+        const distance = targetPosition.distanceTo(pigeon.root.position)
+
+        if (distance < 2 && closestFood)
           return pigeon.eat(closestFood)
 
-        const direction = closestFood.root.position.clone()
+        const direction = targetPosition.clone()
           .sub(pigeon.root.position)
           .normalize()
 
-        pigeon.root.position.add(direction.multiplyScalar(delta * 2.0))
-        pigeon.root.o3d?.lookAt(closestFood.root.position)
+        const lookPosition = targetPosition.clone()
+          .add(new Vector3(0, -1, 0))
+
+        pigeon.move(direction)
+        pigeon.lookAt(lookPosition)
       })
   })
 }
