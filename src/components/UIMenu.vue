@@ -2,7 +2,7 @@
   <Transition name="menu">
     <div v-show="isOpened" class="ui-menu" :style="{ top, left }">
       <UIButton @click="emit('pigeon')">
-        Pigeon
+        PRUUU
       </UIButton>
 
       <UIButton @click="emit('cookie')">

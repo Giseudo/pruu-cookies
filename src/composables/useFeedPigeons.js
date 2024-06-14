@@ -20,7 +20,7 @@ const findClosestFood = (pigeon, foods) => {
   return closest
 }
 
-export const useFeedPigeons = (pigeons = [], foods = []) => {
+export const useFeedPigeons = (pigeons, foods) => {
   useUpdate((delta) => {
     Object.values(pigeons)
       .map(({ instance }) => instance)
@@ -30,11 +30,17 @@ export const useFeedPigeons = (pigeons = [], foods = []) => {
         if (!closestFood)
           return
 
+        const distance = closestFood.root.position.distanceTo(pigeon.root.position)
+
+        if (distance < 2)
+          return pigeon.eat(closestFood)
+
         const direction = closestFood.root.position.clone()
           .sub(pigeon.root.position)
           .normalize()
 
         pigeon.root.position.add(direction.multiplyScalar(delta * 2.0))
+        pigeon.root.o3d?.lookAt(closestFood.root.position)
       })
   })
 }

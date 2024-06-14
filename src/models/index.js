@@ -1,5 +1,5 @@
-import Pigeon from './Pigeon.vue'
-import Cookie from './Cookie.vue'
+import Pigeon from './Pigeon/Pigeon.vue'
+import Cookie from './Cookie/Cookie.vue'
 
 export const registerModels = {
   install(app) {

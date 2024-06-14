@@ -5,9 +5,9 @@
     shadow
     :orbit-ctrl="orbitControls"
   >
-    <Camera ref="camera" :position="{ x: 40, y: 25, z: -40 }" :fov="60" />
+    <Camera ref="camera" :position="{ x: 0, y: 50, z: 0 }" :fov="60" />
 
-    <Scene>
+    <Scene background="#00b5ff">
       <HelloWorld />
     </Scene>
   </Renderer>
@@ -24,6 +24,7 @@
 import { ref, onMounted, onBeforeUnmount } from 'vue'
 import { Clock } from 'three'
 import { useGameStore, useMenuStore, usePigeonStore } from './stores'
+import * as TWEEN from '@tweenjs/tween.js'
 
 import HelloWorld from './scenes/HelloWorld.vue'
 
@@ -67,6 +68,7 @@ onMounted(() => {
   renderer.value.onBeforeRender(() => {
     setDelta(clock.getDelta())
     setTime(clock.getElapsedTime())
+    TWEEN.update()
   })
 
   window.addEventListener('mousemove', onMouseMove)
