@@ -5,7 +5,7 @@
     shadow
     :orbit-ctrl="orbitControls"
   >
-    <Camera ref="camera" :position="{ x: 20, y: 50, z: 20 }" :fov="60" />
+    <Camera ref="camera" :position="{ x: 0, y: 40, z: 70 }" :fov="60" />
 
     <Scene background="#00b5ff">
       <HelloWorld />
@@ -44,19 +44,16 @@ const orbitControls = { enableDamping: true, dampingFactor: 0.05 }
 
 const onAddPigeon = () => {
   addPigeon(pigeonStore.spawnPoint)
-
   showMenu(false)
 }
 
 const onAddCookie = () => {
   addCookie(pigeonStore.spawnPoint)
-
   showMenu(false)
 }
 
 const onAddTicket = () => {
   addTicket(pigeonStore.spawnPoint)
-
   showMenu(false)
 }
 
