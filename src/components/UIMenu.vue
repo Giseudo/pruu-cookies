@@ -8,10 +8,6 @@
       <UIButton theme="primary" @click="onClick('cookie')">
         Cookie
       </UIButton>
-
-      <UIButton theme="accent" @click="emit('ticket')">
-        Ticket
-      </UIButton>
     </div>
   </Transition>
 </template>
@@ -58,11 +54,12 @@ const onClick = (action) => {
 
 .menu-enter-active,
 .menu-leave-active {
-  transition: transform 0.15s cubic-bezier(0.64, 0.57, 0.67, 1.53);
+  transition: all 0.15s cubic-bezier(0.64, 0.57, 0.67, 1.53);
 }
 
 .menu-enter-from,
 .menu-leave-to {
+  opacity: 0;
   transform: translate(-50%, -50%) scale(0);
 }
 </style>

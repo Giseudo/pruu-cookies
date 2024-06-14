@@ -1,12 +1,12 @@
 <template>
   <Group ref="root">
-    <GltfModel :src="cookieModel" @load="onReady" />
+    <GltfModel :src="cookieModel" @load="onLoadModel" />
   </Group>
 </template>
 
 <script setup>
 import { ref, defineExpose, defineEmits, getCurrentInstance } from 'vue'
-import { useBite } from '../../composables'
+import { useBite, useSpawn } from '../../composables'
 import cookieModel from './Cookie.glb?url'
 
 const root = ref(null)
@@ -19,18 +19,11 @@ const props = defineProps({
   }
 })
 
-const onReady = ({ scene }) => {
-  scene.traverse(o => {
-    if (!o.isMesh)
-      return
-
-    o.castShadow = true
-  })
-}
 
 const onDestroy = (source) => emit('eaten', source)
 
 const { bite, eaten } = useBite(root, props.bites, onDestroy)
+const { onLoadModel } = useSpawn(root)
 
 defineExpose({ ...getCurrentInstance(), bite, eaten, root })
 </script>

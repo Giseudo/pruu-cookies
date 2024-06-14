@@ -11,14 +11,14 @@
       <BasicMaterial :props="{ map: screenTexture }" />
     </Plane>
 
-    <GltfModel :src="computerModel" @load="onReady" />
+    <GltfModel :src="computerModel" @load="onLoadModel" />
   </Group>
 </template>
 
 <script setup>
 import { ref, defineExpose, defineProps, defineEmits, getCurrentInstance } from 'vue'
 import { TextureLoader } from 'three'
-import { useBite } from '../../composables'
+import { useBite, useSpawn } from '../../composables'
 import conveniaLogo from './Convenia.png?url'
 import computerModel from './Computer.glb?url'
 
@@ -36,19 +36,12 @@ const props = defineProps({
   }
 })
 
-const onReady = ({ scene }) => {
-  scene.traverse(o => {
-    if (!o.isMesh)
-      return
-
-    o.castShadow = true
-  })
-}
-
 const onDestroy = (source) => emit('eaten', source)
+
 const onBeforeDestroy = () => showScreen.value = false
 
 const { bite, eaten } = useBite(root, props.bites, onDestroy, onBeforeDestroy)
+const { onLoadModel } = useSpawn(root)
 
 defineExpose({ ...getCurrentInstance(), bite, eaten, root })
 </script>

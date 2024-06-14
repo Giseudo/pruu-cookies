@@ -1,15 +1,17 @@
 <template>
-  <GltfModel ref="root" :src="pigeonModel" @load="onReady" />
+  <Group ref="root">
+    <GltfModel ref="model" :src="pigeonModel" @load="onLoadModel" />
+  </Group>
 </template>
 
 <script setup>
-import { ref, onMounted, defineProps, defineExpose, getCurrentInstance } from 'vue'
-import { useUpdate, useMovement } from '../../composables'
+import { ref, defineProps, defineExpose, getCurrentInstance } from 'vue'
+import { useMovement, useSpawn, useBouncing } from '../../composables'
 import { useGameStore } from '../../stores'
 import pigeonModel from './Pigeon.glb?url'
 
 const root = ref(null)
-const offset = ref(0)
+const model = ref(null)
 const lastBiteTime = ref(0)
 
 const props = defineProps({
@@ -20,20 +22,11 @@ const props = defineProps({
 })
 
 const { move, stop, lookAt} = useMovement(root, props)
-
-const bounceSpeed = 20
-const bounceHeight = 1
+const { onLoadModel } = useSpawn(root)
 
 const gameStore = useGameStore()
 
-const onReady = ({ scene }) => {
-  scene.traverse(o => {
-    if (!o.isMesh)
-      return
-
-    o.castShadow = true
-  })
-}
+useBouncing(model)
 
 const eat = function (food) {
   stop()
@@ -45,25 +38,6 @@ const eat = function (food) {
 
   setTimeout(() => food.bite(this) , 500)
 }
-
-onMounted(() => {
-  offset.value = Date.now()
-})
-
-const bouncing = (time) => {
-  if (!root.value.o3d)
-    return
-
-  const t = (Math.sin(offset.value + time * bounceSpeed) + 1.0) / 2.0
-
-  root.value.o3d.position.y = (t * t * t) * bounceHeight
-  root.value.o3d.scale.x = 1 + (1 - (t * t * t)) * 0.75
-  root.value.o3d.scale.z = 1 + (1 - (t * t * t)) * 0.75
-}
-
-useUpdate((_, time) => {
-  bouncing(time)
-})
 
 defineExpose({ ...getCurrentInstance(), eat, move, lookAt, root })
 </script>

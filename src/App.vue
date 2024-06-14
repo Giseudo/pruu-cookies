@@ -40,7 +40,7 @@ const { addPigeon, addCookie, addTicket } = pigeonStore
 const { setRenderer, setDelta, setTime, setCamera } = gameStore
 const { showMenu, setMousePosition } = menuStore
 
-const orbitControls = { enableDamping: true, dampingFactor: 0.05 }
+const orbitControls = { enableDamping: true, dampingFactor: 0.05, panSpeed: 0.1 }
 
 const onAddPigeon = () => {
   addPigeon(pigeonStore.spawnPoint)
